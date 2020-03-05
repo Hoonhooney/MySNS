@@ -90,7 +90,7 @@
                 android:inputType="date"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:hint="Birthday(6 digits)"
+                android:hint="Birthday(6 digits -> YYMMDD)"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="10dp"/>

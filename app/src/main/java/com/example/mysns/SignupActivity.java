@@ -348,6 +348,7 @@ public class SignupActivity extends AppCompatActivity {
                                 //init user profile
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(nickname)
+                                        .setPhotoUri(Uri.parse(profileImgUrl))
                                         .build();
                                 user.updateProfile(profileUpdates);
 

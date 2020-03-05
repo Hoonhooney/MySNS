@@ -2,15 +2,25 @@ package com.example.mysns;
 
 public class UserInfo {
     public String uid;
+    public String email;
     public String nickname;
     public String birthday;
     public String profileImgUrl;
 
-    public UserInfo(String uid, String nickname, String birthday, String profileImgUrl){
+    public UserInfo(String uid,, String email, String nickname, String birthday, String profileImgUrl){
         uid = this.uid;
+        email = this.email;
         nickname = this.nickname;
         birthday = this.birthday;
         profileImgUrl = this.profileImgUrl;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUid() {

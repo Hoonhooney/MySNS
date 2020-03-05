@@ -7,7 +7,7 @@ public class UserInfo {
     public String birthday;
     public String profileImgUrl;
 
-    public UserInfo(String uid,, String email, String nickname, String birthday, String profileImgUrl){
+    public UserInfo(String uid, String email, String nickname, String birthday, String profileImgUrl){
         uid = this.uid;
         email = this.email;
         nickname = this.nickname;

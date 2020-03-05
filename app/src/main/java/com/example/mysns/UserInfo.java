@@ -1,18 +1,18 @@
 package com.example.mysns;
 
 public class UserInfo {
-    public String uid;
-    public String email;
-    public String nickname;
-    public String birthday;
-    public String profileImgUrl;
+    private String uid;
+    private String email;
+    private String nickname;
+    private String birthday;
+    private String profileImgUrl;
 
     public UserInfo(String uid, String email, String nickname, String birthday, String profileImgUrl){
-        uid = this.uid;
-        email = this.email;
-        nickname = this.nickname;
-        birthday = this.birthday;
-        profileImgUrl = this.profileImgUrl;
+        this.uid = uid;
+        this.email = email;
+        this.nickname = nickname;
+        this.birthday = birthday;
+        this.profileImgUrl =  profileImgUrl;
     }
 
     public String getEmail() {

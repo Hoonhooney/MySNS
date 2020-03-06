@@ -8,6 +8,7 @@ import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,7 +21,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,10 +43,7 @@ import com.gun0912.tedpermission.TedPermission;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +63,7 @@ public class SignupActivity extends AppCompatActivity {
     private RelativeLayout button_signup, button_checkNickname, button_browse, button_cam;
     private TextView textView_checkNickname, textView_profileImg;
     private CircleImageView profileImageView;
-    private String email = "", password = "", passwordCheck = "", nickname = "", birthday = "", profileImgUrl = "";
+    private String email = "", password = "", passwordCheck = "", nickname = "", birthday = "", profileImgUri = "";
     private boolean nicknameCheck;
 
     private Boolean isPermission = true;
@@ -75,6 +72,8 @@ public class SignupActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +91,10 @@ public class SignupActivity extends AppCompatActivity {
         profileImageView = findViewById(R.id.circleImageView_profile);
 
         nicknameCheck = false;
+
+        progressDialog = new ProgressDialog(SignupActivity.this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Please wait...");
 
         tedPermission();
 
@@ -137,6 +140,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private void checkNickname(){
         nickname = editText_nickname.getText().toString();
+        progressDialog.show();
 
         db.collection("users").whereEqualTo("nickname", nickname)
                 .get()
@@ -144,6 +148,7 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         Log.d(TAG, "checking nickname success");
+                        progressDialog.dismiss();
                         AlertDialog.Builder builder = new AlertDialog.Builder(SignupActivity.this);
                         builder.setTitle("Checking Nickname...");
 
@@ -177,6 +182,7 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "checking nickname failed", e);
+                        progressDialog.dismiss();
                     }
                 });
     }
@@ -204,8 +210,8 @@ public class SignupActivity extends AppCompatActivity {
             case PICK_FROM_ALBUM: {
 
                 Uri photoUri = data.getData();
-                profileImgUrl = photoUri.toString();
-                textView_profileImg.setText(profileImgUrl);
+                profileImgUri = photoUri.toString();
+                textView_profileImg.setText(profileImgUri);
                 Log.d(TAG, "PICK_FROM_ALBUM photoUri : " + photoUri);
 
                 cropImage(photoUri);
@@ -215,8 +221,8 @@ public class SignupActivity extends AppCompatActivity {
             case PICK_FROM_CAMERA: {
 
                 Uri photoUri = Uri.fromFile(tempFile);
-                profileImgUrl = photoUri.toString();
-                textView_profileImg.setText(profileImgUrl);
+                profileImgUri = photoUri.toString();
+                textView_profileImg.setText(profileImgUri);
                 Log.d(TAG, "takePhoto photoUri : " + photoUri);
 
                 cropImage(photoUri);
@@ -336,6 +342,8 @@ public class SignupActivity extends AppCompatActivity {
             Toast.makeText(SignupActivity.this, "Please text your birthday correctly!\n(6 digits like 'YYMMDD')",
                     Toast.LENGTH_LONG).show();
         else {
+            progressDialog.show();
+
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -348,12 +356,12 @@ public class SignupActivity extends AppCompatActivity {
                                 //init user profile
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(nickname)
-                                        .setPhotoUri(Uri.parse(profileImgUrl))
+                                        .setPhotoUri(Uri.parse(profileImgUri))
                                         .build();
                                 user.updateProfile(profileUpdates);
 
                                 String uid = user.getUid();
-                                final UserInfo userInfo = new UserInfo(uid, email, nickname, birthday, profileImgUrl);
+                                final UserInfo userInfo = new UserInfo(uid, email, nickname, birthday, profileImgUri);
 
                                 db.collection("users").document(uid)
                                         .set(userInfo)
@@ -361,8 +369,9 @@ public class SignupActivity extends AppCompatActivity {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 Log.d(TAG, "adding user information to db : success");
+                                                progressDialog.dismiss();
 
-                                                if(!profileImgUrl.isEmpty()){
+                                                if(!profileImgUri.isEmpty()){
                                                     profileImgUpload();
                                                 }
 
@@ -383,6 +392,7 @@ public class SignupActivity extends AppCompatActivity {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
                                                 Log.w(TAG, "adding user information to db : fail", e);
+                                                progressDialog.dismiss();
 
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(SignupActivity.this);
                                                 builder.setTitle("Sign up").setMessage("Sign up failed : failed to add user information to db");
@@ -407,7 +417,7 @@ public class SignupActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
-        Uri file = Uri.parse(profileImgUrl);
+        Uri file = Uri.parse(profileImgUri);
         StorageReference profileRef = storageRef.child("images/profile/"+file.getLastPathSegment());
 
         UploadTask uploadTask = profileRef.putFile(file);

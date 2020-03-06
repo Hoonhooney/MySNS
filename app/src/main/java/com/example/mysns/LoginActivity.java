@@ -1,5 +1,6 @@
 package com.example.mysns;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,10 +32,16 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        progressDialog = new ProgressDialog(LoginActivity.this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Please wait...");
 
         editText_email = findViewById(R.id.editText_login_email);
         editText_password = findViewById(R.id.editText_login_password);
@@ -76,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, "Please check your email or password!",
                     Toast.LENGTH_SHORT).show();
         }else{
+            progressDialog.show();
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -83,13 +91,15 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
+                                progressDialog.dismiss();
+
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                progressDialog.dismiss();
                                 Toast.makeText(LoginActivity.this, "There is no user record corresponding to this identifier",
                                         Toast.LENGTH_LONG).show();
                             }

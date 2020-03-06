@@ -5,14 +5,16 @@ public class UserInfo {
     private String email;
     private String nickname;
     private String birthday;
-    private String profileImgUrl;
+    private String profileImgUri;
 
-    public UserInfo(String uid, String email, String nickname, String birthday, String profileImgUrl){
+    public UserInfo(){}
+
+    public UserInfo(String uid, String email, String nickname, String birthday, String profileImgUri){
         this.uid = uid;
         this.email = email;
         this.nickname = nickname;
         this.birthday = birthday;
-        this.profileImgUrl =  profileImgUrl;
+        this.profileImgUri =  profileImgUri;
     }
 
     public String getEmail() {
@@ -47,11 +49,11 @@ public class UserInfo {
         this.birthday = birthday;
     }
 
-    public String getProfileImgUrl() {
-        return profileImgUrl;
+    public String getProfileImgUri() {
+        return profileImgUri;
     }
 
-    public void setProfileImgUrl(String profileImgUrl) {
-        this.profileImgUrl = profileImgUrl;
+    public void setProfileImgUri(String profileImgUri) {
+        this.profileImgUri = profileImgUri;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.mysns;
+package com.example.mysns.Fragments;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -19,6 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.mysns.LoginActivity;
+import com.example.mysns.R;
+import com.example.mysns.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,7 +38,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MyPageFragment extends Fragment {
     private static final String TAG = "TAG_mypage";
 
-    private Context context = getActivity();
+    private Context context;
 
     private CircleImageView imageView_profile;
     private TextView textView_nickname;
@@ -47,8 +50,6 @@ public class MyPageFragment extends Fragment {
 
     private UserInfo userInfo;
     private ProgressDialog progressDialog;
-
-    private OnFragmentInteractionListener mListener;
 
     public MyPageFragment() {
         // Required empty public constructor
@@ -65,6 +66,8 @@ public class MyPageFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_page, container, false);
+
+        context = getActivity();
 
         imageView_profile = view.findViewById(R.id.circleImageView_mypage_profile);
         textView_nickname = view.findViewById(R.id.textView_mypage_nickname);
@@ -100,10 +103,11 @@ public class MyPageFragment extends Fragment {
                     .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    Log.d(TAG, "getting userInfo from db : success");
                     userInfo = documentSnapshot.toObject(UserInfo.class);
 
                     if(userInfo != null){
+                        Log.d(TAG, "getting userInfo from db : success");
+
                         textView_nickname.setText(userInfo.getNickname());
                         textView_birthday.setText(userInfo.getBirthday());
                         textView_email.setText(userInfo.getEmail());
@@ -153,31 +157,9 @@ public class MyPageFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_my_page, container, false);
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
     private void goActivity(Class c){
         Intent intent = new Intent(context, c);
         startActivity(intent);
 //        context.finish();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

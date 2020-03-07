@@ -39,6 +39,7 @@ public class MyPageFragment extends Fragment {
     private static final String TAG = "TAG_mypage";
 
     private Context context;
+    private View rootView;
 
     private CircleImageView imageView_profile;
     private TextView textView_nickname;
@@ -47,38 +48,64 @@ public class MyPageFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private FirebaseUser user;
 
     private UserInfo userInfo;
+
+    private String nickname, email, birthday, profileImgUri;
+    private boolean haveProfileImg = false, haveInit = false;
+    private Uri uploadImgUri;
+
     private ProgressDialog progressDialog;
 
     public MyPageFragment() {
         // Required empty public constructor
     }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+    public void onAttach(Context c) {
+        super.onAttach(context);
+        context = c;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_page, container, false);
+        rootView = inflater.inflate(R.layout.fragment_my_page, container, false);
 
-        context = getActivity();
+        imageView_profile = rootView.findViewById(R.id.circleImageView_mypage_profile);
+        textView_nickname = rootView.findViewById(R.id.textView_mypage_nickname);
+        textView_birthday = rootView.findViewById(R.id.textView_mypage_birthday);
+        textView_email = rootView.findViewById(R.id.textView_mypage_email);
 
-        imageView_profile = view.findViewById(R.id.circleImageView_mypage_profile);
-        textView_nickname = view.findViewById(R.id.textView_mypage_nickname);
-        textView_birthday = view.findViewById(R.id.textView_mypage_birthday);
-        textView_email = view.findViewById(R.id.textView_mypage_email);
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Please wait...");
+
+        if(!haveInit)
+            getMyInfo();
+
+        if(haveInit && userInfo != null)
+            setViews();
+
+        return rootView;
+    }
+
+    private void goActivity(Class c){
+        Intent intent = new Intent(context, c);
+        startActivity(intent);
+//        context.finish();
+    }
+
+    private void getMyInfo(){
+        progressDialog.show();
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         //        getting user information
-        FirebaseUser user = mAuth.getCurrentUser();
+        user = mAuth.getCurrentUser();
 
         if(user == null){
             Log.d(TAG, "user logged out");
@@ -94,11 +121,6 @@ public class MyPageFragment extends Fragment {
             AlertDialog dialog = builder.create();
             dialog.show();
         }else{
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage("Please wait...");
-            progressDialog.show();
-
             db.collection("users").document(user.getUid())
                     .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
@@ -106,14 +128,11 @@ public class MyPageFragment extends Fragment {
                     userInfo = documentSnapshot.toObject(UserInfo.class);
 
                     if(userInfo != null){
-                        Log.d(TAG, "getting userInfo from db : success");
+                        nickname = userInfo.getNickname();
+                        email = userInfo.getEmail();
+                        birthday = userInfo.getBirthday();
+                        profileImgUri = userInfo.getProfileImgUri();
 
-                        textView_nickname.setText(userInfo.getNickname());
-                        textView_birthday.setText(userInfo.getBirthday());
-                        textView_email.setText(userInfo.getEmail());
-
-//                        profile image upload
-                        String profileImgUri = userInfo.getProfileImgUri();
                         if(profileImgUri != null && !profileImgUri.isEmpty()){
                             Uri profileUri = Uri.parse(profileImgUri);
 
@@ -124,23 +143,29 @@ public class MyPageFragment extends Fragment {
                                 @Override
                                 public void onComplete(@NonNull Task<Uri> task) {
                                     if(task.isSuccessful()){
+                                        Log.d(TAG, "downloading user profile image : success");
+                                        uploadImgUri = task.getResult();
+                                        haveProfileImg = true;
+
                                         Glide.with(context)
-                                                .load(task.getResult())
+                                                .load(uploadImgUri)
                                                 .into(imageView_profile);
 
                                         progressDialog.dismiss();
+
                                     }else{
                                         Log.d(TAG, "downloading user profile image : fail");
                                         Toast.makeText(context,
                                                 "downloading user profile image : fail", Toast.LENGTH_LONG).show();
-
-                                        progressDialog.dismiss();
                                     }
                                 }
                             });
                         }
-                        progressDialog.dismiss();
+
+                        setViews();
+
                     }
+                    progressDialog.dismiss();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -148,18 +173,24 @@ public class MyPageFragment extends Fragment {
                     Log.w(TAG, "getting userInfo from db : fail", e);
                     Toast.makeText(context, "getting userInfo from db is failed",
                             Toast.LENGTH_LONG).show();
-
                     progressDialog.dismiss();
                 }
             });
-        }
 
-        return inflater.inflate(R.layout.fragment_my_page, container, false);
+            haveInit = true;
+        }
     }
 
-    private void goActivity(Class c){
-        Intent intent = new Intent(context, c);
-        startActivity(intent);
-//        context.finish();
+    private void setViews(){
+        textView_nickname.setText(nickname);
+        textView_birthday.setText(birthday);
+        textView_email.setText(email);
+
+//                        profile image upload
+        if(haveProfileImg) {
+            Glide.with(context)
+                    .load(uploadImgUri)
+                    .into(imageView_profile);
+        }
     }
 }

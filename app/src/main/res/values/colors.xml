@@ -6,4 +6,5 @@
     <color name="colorTrue">#00ff00</color>
     <color name="colorFalse">#ff0000</color>
     <color name="colorDefault">#777777</color>
+    <color name="colorHighlight">#059DE3</color>
 </resources>

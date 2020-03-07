@@ -22,31 +22,51 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="center">
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="6">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="5"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/textView_mypage_nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:layout_marginBottom="5dp"
+                    android:text="User Nickname"/>
+
+                <TextView
+                    android:id="@+id/textView_mypage_birthday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="User Birthday"/>
+
+                <TextView
+                    android:id="@+id/textView_mypage_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="User Email"/>
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/textView_mypage_nickname"
-                android:layout_width="wrap_content"
+                android:id="@+id/button_mypage_edit"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:layout_marginBottom="5dp"
-                android:text="User Nickname"/>
-
-            <TextView
-                android:id="@+id/textView_mypage_birthday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:text="User Birthday"/>
-
-            <TextView
-                android:id="@+id/textView_mypage_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:text="User Email"/>
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:text="Edit"
+                android:textAlignment="center"
+                android:textColor="@color/colorHighlight"
+                android:gravity="center"/>
 
         </LinearLayout>
 

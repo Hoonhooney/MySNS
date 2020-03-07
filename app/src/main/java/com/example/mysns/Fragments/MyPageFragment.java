@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.mysns.EditProfileActivity;
 import com.example.mysns.LoginActivity;
 import com.example.mysns.R;
 import com.example.mysns.UserInfo;
@@ -45,6 +46,7 @@ public class MyPageFragment extends Fragment {
     private TextView textView_nickname;
     private TextView textView_birthday;
     private TextView textView_email;
+    private TextView button_editProfile;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -78,6 +80,7 @@ public class MyPageFragment extends Fragment {
         textView_nickname = rootView.findViewById(R.id.textView_mypage_nickname);
         textView_birthday = rootView.findViewById(R.id.textView_mypage_birthday);
         textView_email = rootView.findViewById(R.id.textView_mypage_email);
+        button_editProfile = rootView.findViewById(R.id.button_mypage_edit);
 
         progressDialog = new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -88,6 +91,14 @@ public class MyPageFragment extends Fragment {
 
         if(haveInit && userInfo != null)
             setViews();
+
+//        edit profile button
+        button_editProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goActivity(EditProfileActivity.class);
+            }
+        });
 
         return rootView;
     }

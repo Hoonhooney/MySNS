@@ -38,7 +38,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MyPageFragment extends Fragment {
     private static final String TAG = "TAG_mypage";
-
     private Context context;
     private View rootView;
 
@@ -105,6 +104,10 @@ public class MyPageFragment extends Fragment {
 
     private void goActivity(Class c){
         Intent intent = new Intent(context, c);
+        intent.putExtra("nickname", nickname);
+        intent.putExtra("birthday", birthday);
+        intent.putExtra("imageUri", uploadImgUri);
+        intent.putExtra("imageUriString", profileImgUri);
         startActivity(intent);
 //        context.finish();
     }

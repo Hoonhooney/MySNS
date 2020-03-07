@@ -84,6 +84,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
 //        initiating bottom navigation view and fragments
+
+        newsfeedFragment = new NewsfeedFragment();
+        postFragment = new PostFragment();
+        myPageFragment = new MyPageFragment();
+        settingsFragment = new SettingsFragment();
+
         bottomNavigationView = findViewById(R.id.bottomNavi);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -105,11 +111,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        newsfeedFragment = new NewsfeedFragment();
-        postFragment = new PostFragment();
-        myPageFragment = new MyPageFragment();
-        settingsFragment = new SettingsFragment();
 
 //        initiating first fragment page
         setFragment(0);

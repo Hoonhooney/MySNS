@@ -369,11 +369,11 @@ public class SignupActivity extends AppCompatActivity {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 Log.d(TAG, "adding user information to db : success");
-                                                progressDialog.dismiss();
 
                                                 if(!profileImgUri.isEmpty()){
                                                     profileImgUpload();
                                                 }
+                                                progressDialog.dismiss();
 
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(SignupActivity.this);
                                                 builder.setTitle("Sign up").setMessage("Sign up Completed!");

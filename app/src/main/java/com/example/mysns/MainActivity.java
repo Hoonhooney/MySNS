@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction ft;
 
     private NewsfeedFragment newsfeedFragment;
-    private PostFragment postFragment;
     private MyPageFragment myPageFragment;
     private SettingsFragment settingsFragment;
 
@@ -91,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
 //        initiating bottom navigation view and fragments
 
         newsfeedFragment = new NewsfeedFragment();
-        postFragment = new PostFragment();
         myPageFragment = new MyPageFragment();
         settingsFragment = new SettingsFragment();
 
@@ -138,8 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
                 break;
             case 1:
-                ft.replace(R.id.frameLayout, postFragment);
-                ft.commit();
+                goActivity(PostActivity.class);
                 break;
             case 2:
                 ft.replace(R.id.frameLayout, myPageFragment);

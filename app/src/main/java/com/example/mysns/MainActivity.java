@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 
 import com.example.mysns.Fragments.MyPageFragment;
 import com.example.mysns.Fragments.NewsfeedFragment;
-import com.example.mysns.Fragments.PostFragment;
 import com.example.mysns.Fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;

@@ -62,8 +62,8 @@ public class MyPageFragment extends Fragment {
     public MyPageFragment() {
         // Required empty public constructor
     }
-    @Override
 
+    @Override
     public void onAttach(Context c) {
         super.onAttach(context);
         context = c;

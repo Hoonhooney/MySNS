@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class PostActivity extends AppCompatActivity {
@@ -269,11 +270,11 @@ public class PostActivity extends AppCompatActivity {
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     UserInfo userInfo = documentSnapshot.toObject(UserInfo.class);
                     if(userInfo != null){
-                        nickname = userInfo.getNickname();
                         description = editText_description.getText().toString();
                         postedTime = new SimpleDateFormat("HH:mm dd/MM/YYYY").format(new Date());
+                        long createdAt = Calendar.getInstance().getTimeInMillis();
 
-                        Post post = new Post(uid, nickname, imageUri, postedTime, description);
+                        Post post = new Post(uid, imageUri, postedTime, description, createdAt);
                         db.collection("posts").add(post).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {

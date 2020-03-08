@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.NewsfeedFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_newsfeed"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="NewsfeedFragment" />
+        android:layout_height="match_parent"/>
 
 </FrameLayout>

@@ -56,7 +56,7 @@ public class PostActivity extends AppCompatActivity {
     private TextView button_browse, button_cam;
     private EditText editText_description;
 
-    private String nickname, description, postedTime, imageUri;
+    private String description, postedTime, imageUri;
 
     private Boolean isPermission = true;
 

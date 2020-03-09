@@ -19,8 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.mysns.EditProfileActivity;
-import com.example.mysns.LoginActivity;
+import com.example.mysns.Activities.EditProfileActivity;
+import com.example.mysns.Activities.LoginActivity;
 import com.example.mysns.R;
 import com.example.mysns.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;

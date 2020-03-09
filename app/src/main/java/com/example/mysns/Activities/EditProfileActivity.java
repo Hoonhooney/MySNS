@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,6 +21,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,9 +62,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private EditText editText_nickname;
     private EditText editText_birthday;
-    private RelativeLayout button_editFinish, button_checkNickname, button_browse, button_cam;
-    private TextView textView_checkNickname, textView_profileImg;
+    private RelativeLayout button_editFinish, button_checkNickname;
+    private TextView textView_checkNickname;
     private CircleImageView profileImageView;
+    private ImageView button_editProfileImage;
 
     private String nickname = "", birthday = "", profileImgUri = "", nickname_now, birthday_now, profileImgUri_now_string;
     private Uri profileImgUri_now;
@@ -95,9 +98,6 @@ public class EditProfileActivity extends AppCompatActivity {
         editText_birthday = findViewById(R.id.editText_edit_birthday);
         editText_birthday.setText(birthday_now);
 
-        textView_profileImg = findViewById(R.id.textView_edit_profileImage);
-        textView_profileImg.setText(profileImgUri_now_string);
-
         profileImageView = findViewById(R.id.circleImageView_edit_profile);
         if(profileImgUri_now != null){
             Glide.with(EditProfileActivity.this)
@@ -121,21 +121,38 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
-        button_browse = findViewById(R.id.button_edit_profileImg_browse);
-        button_browse.setOnClickListener(new View.OnClickListener() {
+        button_editProfileImage = findViewById(R.id.button_edit_profile_image);
+        button_editProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isPermission) goToAlbum();
-                else Toast.makeText(EditProfileActivity.this, "not granted", Toast.LENGTH_LONG).show();
-            }
-        });
+                final CharSequence[] oItems = {"Browse an Image", "Take a Photo", "Set Basic Profile Image"};
 
-        button_cam = findViewById(R.id.button_edit_profileImg_cam);
-        button_cam.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isPermission)  takePhoto();
-                else Toast.makeText(EditProfileActivity.this, "not granted", Toast.LENGTH_LONG).show();
+                AlertDialog.Builder oDialog = new AlertDialog.Builder(EditProfileActivity.this,
+                        android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
+
+                oDialog.setItems(oItems, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                switch(which){
+                                    case 0:
+                                        if(isPermission) goToAlbum();
+                                        else Toast.makeText(EditProfileActivity.this, "not granted", Toast.LENGTH_LONG).show();
+                                        break;
+                                    case 1:
+                                        if(isPermission)  takePhoto();
+                                        else Toast.makeText(EditProfileActivity.this, "not granted", Toast.LENGTH_LONG).show();
+                                        break;
+                                    case 2:
+                                        profileImgUri = "default";
+                                        profileImageView.setImageResource(R.drawable.profile_default);
+                                        break;
+                                }
+                            }
+                        })
+                        .setCancelable(true)
+                        .show();
             }
         });
 
@@ -228,7 +245,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
                 Uri photoUri = data.getData();
                 profileImgUri = photoUri.toString();
-                textView_profileImg.setText(profileImgUri);
                 Log.d(TAG, "PICK_FROM_ALBUM photoUri : " + photoUri);
 
                 cropImage(photoUri);
@@ -239,7 +255,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
                 Uri photoUri = Uri.fromFile(tempFile);
                 profileImgUri = photoUri.toString();
-                textView_profileImg.setText(profileImgUri);
                 Log.d(TAG, "takePhoto photoUri : " + photoUri);
 
                 cropImage(photoUri);
@@ -358,25 +373,27 @@ public class EditProfileActivity extends AppCompatActivity {
             });
         }
 
-        //Upload new file
-        Uri file = Uri.parse(profileImgUri);
-        StorageReference profileRef = storageRef.child("images/profile/"+file.getLastPathSegment());
+        if(!profileImgUri.equals("default")){
+            //Upload new file
+            Uri file = Uri.parse(profileImgUri);
+            StorageReference profileRef = storageRef.child("images/profile/"+file.getLastPathSegment());
 
-        UploadTask uploadTask = profileRef.putFile(file);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.w(TAG, "image upload failed : ",exception);
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.w(TAG, "image upload success");
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-            }
-        });
+            UploadTask uploadTask = profileRef.putFile(file);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.w(TAG, "image upload failed : ",exception);
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.w(TAG, "image upload success");
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                }
+            });
+        }
 
     }
 
@@ -394,8 +411,12 @@ public class EditProfileActivity extends AppCompatActivity {
             edits.put("nickname", nickname);
         if(!birthday.isEmpty() && !birthday.equals(birthday_now))
             edits.put("birthday", birthday);
-        if(!profileImgUri.isEmpty() && !profileImgUri.equals(profileImgUri_now_string))
-            edits.put("profileImgUri", profileImgUri);
+        if(!profileImgUri.isEmpty() && !profileImgUri.equals(profileImgUri_now_string)){
+            if(profileImgUri.equals("default"))
+                edits.put("profileImgUri", "");
+            else
+                edits.put("profileImgUri", profileImgUri);
+        }
 
         FirebaseUser user = mAuth.getCurrentUser();
 

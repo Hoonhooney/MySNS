@@ -1,4 +1,4 @@
-package com.example.mysns;
+package com.example.mysns.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import com.example.mysns.Fragments.MyPageFragment;
 import com.example.mysns.Fragments.NewsfeedFragment;
 import com.example.mysns.Fragments.SettingsFragment;
+import com.example.mysns.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

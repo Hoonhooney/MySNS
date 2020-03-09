@@ -248,6 +248,8 @@ public class PostActivity extends AppCompatActivity {
         Bitmap originalBm = BitmapFactory.decodeFile(tempFile.getAbsolutePath(), options);
         Log.d(TAG, "setImage : " + tempFile.getAbsolutePath());
 
+        imageView_postedImage.setPadding(0, 0, 0, 0);
+        Log.d(TAG,"image padding : "+imageView_postedImage.getPaddingTop());
         imageView_postedImage.setImageBitmap(originalBm);
 
         tempFile = null;

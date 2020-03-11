@@ -31,6 +31,8 @@ public class NewsfeedFragment extends Fragment {
     private static final String TAG = "TAG_newsfeed";
     private Context context;
 
+    private View rootView;
+
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -56,21 +58,16 @@ public class NewsfeedFragment extends Fragment {
         layoutManager = new LinearLayoutManager(context);
         postList = new ArrayList<>();
         mAdapter = new NewsfeedAdapter(postList, context);
-
-        readData();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_newsfeed, container, false);
+        rootView = inflater.inflate(R.layout.fragment_newsfeed, container, false);
 
-//        setting RecyclerView
-        recyclerView = rootView.findViewById(R.id.recyclerView_newsfeed);
-
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(mAdapter);
+//        setting post Data in RecyclerView
+        readData();
 
         return rootView;
     }
@@ -85,6 +82,12 @@ public class NewsfeedFragment extends Fragment {
                             Log.d(TAG, post.getDescription());
                             ((NewsfeedAdapter)mAdapter).addPost(post);
                         }
+
+                        recyclerView = rootView.findViewById(R.id.recyclerView_newsfeed);
+                        recyclerView.setHasFixedSize(true);
+                        recyclerView.setLayoutManager(layoutManager);
+                        recyclerView.setAdapter(mAdapter);
+
                     }
                 });
     }

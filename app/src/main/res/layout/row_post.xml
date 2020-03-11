@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_marginBottom="10dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -24,13 +24,21 @@
             android:id="@+id/textView_newsfeed_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:text="nickname"
+            android:layout_toEndOf="@+id/circleImageView_newsfeed_profile"
+            android:layout_centerVertical="true"
             android:layout_marginStart="5dp"
             android:textSize="20sp"
             android:textColor="@color/colorTextDefault"/>
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/button_post_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_more_vert_black_48dp"/>
+
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/imageView_newsfeed_postedImage"

@@ -46,6 +46,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PostActivity extends AppCompatActivity {
     private static final String TAG = "TAG_post";
@@ -279,11 +281,21 @@ public class PostActivity extends AppCompatActivity {
                         postedTime = new SimpleDateFormat("HH:mm dd/MM/YYYY").format(new Date());
                         long createdAt = Calendar.getInstance().getTimeInMillis();
 
-                        Post post = new Post(uid, imageUri, postedTime, description, createdAt);
+                        final Post post = new Post(uid, imageUri, postedTime, description, createdAt);
                         db.collection("posts").add(post).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
-                                Log.d(TAG,"adding post data on db : success");
+                                Log.d(TAG,"adding post data on db : success : ");
+
+                                Map<String, Object> mapForPostId = new HashMap<>();
+                                mapForPostId.put("postId", documentReference.getId());
+                                documentReference.update(mapForPostId).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG,"adding post id on db : success : ");
+                                    }
+                                });
+
                                 postedImgUpload();
                             }
                         }).addOnFailureListener(new OnFailureListener() {

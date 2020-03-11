@@ -6,7 +6,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:background="#ffffff"
+        android:elevation="10dp">
 
         <ImageView
             android:id="@+id/button_edit_post_cancel"

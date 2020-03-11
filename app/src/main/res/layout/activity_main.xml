@@ -11,6 +11,8 @@
         android:id="@+id/navigation_header_container"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
+        android:background="#ffffff"
+        android:elevation="10dp"
         android:layout_height="50dp">
 
         <TextView
@@ -55,6 +57,8 @@
         android:id="@+id/bottomNavi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:elevation="10dp"
         android:layout_alignParentBottom="true"
         app:itemIconTint="#555555"
         app:itemTextColor="#555555"

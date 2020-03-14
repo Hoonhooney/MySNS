@@ -32,7 +32,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -172,7 +175,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.MyView
             }
         });
 
-        if(uid.equals(mAuth.getUid())){
+//        setting 'more' button visible on current user's posts
+        final String currentUserId = mAuth.getUid();
+        if(uid.equals(currentUserId )){
             holder.button_more.setVisibility(View.VISIBLE);
             holder.button_more.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -217,6 +222,61 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.MyView
         }else
             holder.button_more.setVisibility(View.INVISIBLE);
 
+//        setting 'like' button
+        final List<String> likingPeople = post.getLikeList();
+
+        if(likingPeople.contains(currentUserId)){
+            holder.button_like.setImageResource(R.drawable.ic_like_red_24dp);
+        }else{
+            holder.button_like.setImageResource(R.drawable.ic_like_black_24dp);
+        }
+
+        holder.button_like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(currentUserId != null){
+                    Map<String, Object> likeMap = new HashMap<>();
+
+                    if(!likingPeople.contains(currentUserId)){
+                        likingPeople.add(currentUserId);
+
+                        likeMap.put("likeList", likingPeople);
+                        likeMap.put("numLike", likingPeople.size());
+                        db.collection("posts").document(post.getPostId())
+                                .update(likeMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "adding like : success");
+                                holder.button_like.setImageResource(R.drawable.ic_like_red_24dp);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "adding like : fail", e);
+                            }
+                        });
+                    }else{
+                        likingPeople.remove(currentUserId);
+
+                        likeMap.put("likeList", likingPeople);
+                        likeMap.put("numLike", likingPeople.size());
+                        db.collection("posts").document(post.getPostId())
+                                .update(likeMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "removing like : success");
+                                holder.button_like.setImageResource(R.drawable.ic_like_black_24dp);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "removing like : fail", e);
+                            }
+                        });
+                    }
+                }
+            }
+        });
     }
 
     @Override

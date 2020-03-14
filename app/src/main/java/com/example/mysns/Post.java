@@ -1,6 +1,8 @@
 package com.example.mysns;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Post implements Serializable {
     private String userId;
@@ -8,6 +10,7 @@ public class Post implements Serializable {
     private String postedImageUri;
     private String postedTime;
     private String description;
+    private List<String> likeList;
     private int numLike;
     private long createdAt;
 
@@ -20,6 +23,7 @@ public class Post implements Serializable {
         this.description = description;
         this.numLike = 0;
         this.createdAt = createdAt;
+        this.likeList = new ArrayList<>();
     }
 
     public String getUserId() {
@@ -63,18 +67,19 @@ public class Post implements Serializable {
     }
 
     public int getNumLike() {
+        numLike = likeList.size();
         return numLike;
     }
 
-    public void setNumLike(int numLike) {
-        this.numLike = numLike;
+    public List<String> getLikeList() {
+        return likeList;
+    }
+
+    public void setLikeList(List<String> likeList) {
+        this.likeList = likeList;
     }
 
     public long getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
     }
 }

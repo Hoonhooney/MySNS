@@ -10,6 +10,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.mysns.Activities.EditProfileActivity;
 import com.example.mysns.Activities.LoginActivity;
+import com.example.mysns.MyPostsAdapter;
+import com.example.mysns.NewsfeedAdapter;
+import com.example.mysns.Post;
 import com.example.mysns.R;
 import com.example.mysns.UserInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,8 +36,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -46,6 +56,11 @@ public class MyPageFragment extends Fragment {
     private TextView textView_birthday;
     private TextView textView_email;
     private TextView button_editProfile;
+
+    private RecyclerView recyclerView_my_posts;
+    private MyPostsAdapter mAdapter;
+
+    private List<Post> myPostList;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -67,6 +82,14 @@ public class MyPageFragment extends Fragment {
     public void onAttach(Context c) {
         super.onAttach(context);
         context = c;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -99,6 +122,8 @@ public class MyPageFragment extends Fragment {
             }
         });
 
+        myPostList = new ArrayList<>();
+
         return rootView;
     }
 
@@ -114,9 +139,6 @@ public class MyPageFragment extends Fragment {
 
     private void getMyInfo(){
         progressDialog.show();
-
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
 
         //        getting user information
         user = mAuth.getCurrentUser();
@@ -206,5 +228,36 @@ public class MyPageFragment extends Fragment {
                     .load(uploadImgUri)
                     .into(imageView_profile);
         }
+
+        recyclerView_my_posts = rootView.findViewById(R.id.recyclerView_my_posts);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 3);
+        recyclerView_my_posts.setLayoutManager(mLayoutManager);
+
+        mAdapter = new MyPostsAdapter(myPostList, context);
+        recyclerView_my_posts.setAdapter(mAdapter);
+        readMyData();
+    }
+
+    private void readMyData(){
+        Log.d(TAG, "readMyData()");
+
+        mAdapter.clearList();
+
+        db.collection("posts").whereEqualTo("userId", user.getUid())
+                .orderBy("createdAt", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for(DocumentSnapshot document : queryDocumentSnapshots.getDocuments()){
+                    Post post = document.toObject(Post.class);
+                    Log.d(TAG, post.getDescription());
+                    mAdapter.addPost(post);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "getting my post : fail", e);
+            }
+        });
     }
 }
